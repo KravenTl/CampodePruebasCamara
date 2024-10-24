@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +25,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnCamara;
+    Button btnCamara, btnUbicacion;
     ImageView imageView;
     String rutaimagen;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btnCamara= findViewById(R.id.btnCamara);
+        btnUbicacion = findViewById(R.id.btnUbicacion);
         imageView=findViewById(R.id.imageView);
 
         btnCamara.setOnClickListener(new View.OnClickListener() {
@@ -47,7 +49,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnUbicacion.setOnClickListener(view ->  {
+                Toast.makeText(this,"Abriendo ubicacion",Toast.LENGTH_SHORT).show();
+                Intent intentar = new Intent(this, Ubicacion.class);
+                startActivity(intentar);
+        });
+
     }
+
     private void abrircamara() throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File imagenArchivo = null;

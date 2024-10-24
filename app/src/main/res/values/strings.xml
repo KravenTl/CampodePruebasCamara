@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">CampodePruebas</string>
     <string name="btnCamara">Camara</string>
+    <string name="btnUbicacion">Ubicacion</string>
+    <string name="tvUbicacion">Obteniendo Ubicacion...</string>
+    <string name="btnObtenerUbicacion">Obtener ubicacion</string>
 </resources>
