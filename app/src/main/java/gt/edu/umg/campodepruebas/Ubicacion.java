@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.Manifest;
+import android.widget.Toast;
+
+import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +31,6 @@ public class Ubicacion extends AppCompatActivity {
         tvUbicacion = findViewById(R.id.tvUbicacion);
         proveedorUbicacion = LocationServices.getFusedLocationProviderClient(this);
         btnObtenerUbicacion = findViewById(R.id.btnObtenerUbiacion);
-
         btnObtenerUbicacion.setOnClickListener(v -> obtenerUbicacionActual()); // Obtener ubicación al presionar el botón
     }
 
@@ -48,12 +50,25 @@ public class Ubicacion extends AppCompatActivity {
 
         proveedorUbicacion.getLastLocation().addOnSuccessListener(this, location -> {
             if(location != null){
+                double latitud = location.getLatitude();
+                double longitud = location.getLongitude();
                 tvUbicacion.setText(
-                        "Latitud: " + location.getLatitude() + "\n" +
-                                "Longitud: " + location.getLongitude()
+                        "Latitud: " + latitud + "\n" +
+                                "Longitud: " + longitud
                 );
+                // Crear una instancia de DbUbicacion
+                DbUbicacionesHelper dbUbicacion = new DbUbicacionesHelper(this);
+
+                // Insertar la ubicación en la base de datos
+                long resultado = dbUbicacion.insertarUbicacion(longitud, latitud);
+                if (resultado != -1) {
+                    Toast.makeText(this, "Ubicación guardada con éxito", Toast.LENGTH_SHORT).show();
+                    // Aquí podrías realizar alguna otra acción, como limpiar campos o actualizar la UI
+                } else {
+                    Toast.makeText(this, "Error al guardar la ubicación", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                tvUbicacion.setText("No se pudo obtener la ubicación");
+                Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -36,4 +36,10 @@
         android:layout_width="match_parent"
         android:layout_height="514dp" />
 
+    <Button
+        android:id="@+id/btnCrearBase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btnCrearBase"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

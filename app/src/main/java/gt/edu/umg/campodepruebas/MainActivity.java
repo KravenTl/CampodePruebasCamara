@@ -1,6 +1,7 @@
 package gt.edu.umg.campodepruebas;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -23,9 +24,11 @@ import androidx.core.view.WindowInsetsCompat;
 import java.io.File;
 import java.io.IOException;
 
+import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
+
 public class MainActivity extends AppCompatActivity {
 
-    Button btnCamara, btnUbicacion;
+    Button btnCamara, btnUbicacion, btnCrearBase;
     ImageView imageView;
     String rutaimagen;
 
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         btnCamara= findViewById(R.id.btnCamara);
         btnUbicacion = findViewById(R.id.btnUbicacion);
+        btnCrearBase = findViewById(R.id.btnCrearBase);
         imageView=findViewById(R.id.imageView);
 
         btnCamara.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +51,18 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            }
+        });
+
+        // Crear la base de datos
+        btnCrearBase.setOnClickListener(v -> {
+            DbUbicacionesHelper dbHelper = new DbUbicacionesHelper(this);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            if (db != null) {
+                Toast.makeText(this, "Creando base de datos", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error al crear base de datos", Toast.LENGTH_SHORT).show();
             }
         });
 
