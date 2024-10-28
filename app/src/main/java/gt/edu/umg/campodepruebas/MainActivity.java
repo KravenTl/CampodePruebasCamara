@@ -36,14 +36,15 @@ import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 
 public class MainActivity extends AppCompatActivity {
 
+
     Button btnCamara, btnUbicacion, btnCrearBase, btnMapa, btnGuardar, btnGaleria;
     ImageView imageView;
     String rutaimagen;
-    EditText txtComentario, txtLatitudSi, txtLongitudSi; // Cambiar el nombre de la variable para los TextFields
+    EditText txtComentario, txtLatitudSi, txtLongitudSi;
     double latitud;
     double longitud;
+    private Bitmap imagenCapturada; // Almacena la imagen capturada
 
-    // Para la ubicación
     private FusedLocationProviderClient proveedorUbicacion;
     private static final int CODIGO_SOLICITUD_UBICACION = 1;
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnCamara= findViewById(R.id.btnCamara);
+        btnCamara = findViewById(R.id.btnCamara);
         btnUbicacion = findViewById(R.id.btnUbicacion);
         btnCrearBase = findViewById(R.id.btnCrearBase);
         btnMapa = findViewById(R.id.btnMapa);
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         txtComentario = findViewById(R.id.txtComentario);
         txtLatitudSi = findViewById(R.id.txtLatitudSi);
         txtLongitudSi = findViewById(R.id.txtLongitudSi);
-        imageView=findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView);
         btnGaleria = findViewById(R.id.btnGaleria);
 
         proveedorUbicacion = LocationServices.getFusedLocationProviderClient(this);
@@ -69,11 +70,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 abrircamara();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         });
-
-        //Aca se crea la mera database
 
         btnCrearBase.setOnClickListener(v -> {
             DbUbicacionesHelper dbHelper = new DbUbicacionesHelper(this);
@@ -86,15 +85,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Con este boton se abre el galeria activity
-
         btnGaleria.setOnClickListener(view -> {
             Toast.makeText(this, "Abriendo Galeria", Toast.LENGTH_SHORT).show();
             Intent intentar = new Intent(this, Galeria.class);
             startActivity(intentar);
         });
-
-        //Con este boton se abre el mapa activity
 
         btnMapa.setOnClickListener(view -> {
             Toast.makeText(this, "Abriendo Mapa", Toast.LENGTH_SHORT).show();
@@ -102,12 +97,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intentar);
         });
 
-
-        //El boton llama la metodo ubicar
-
         btnUbicacion.setOnClickListener(v -> obtenerUbicacionActual());
-
-        //El boton llama la metodo guardar
 
         btnGuardar.setOnClickListener(v -> {
             if (!txtLatitudSi.getText().toString().isEmpty() && !txtLongitudSi.getText().toString().isEmpty()) {
@@ -117,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    //Aqui se obtiene la ubicacion y los permisos
 
     private void obtenerUbicacionActual() {
         if (ActivityCompat.checkSelfPermission(
@@ -133,39 +121,34 @@ public class MainActivity extends AppCompatActivity {
             if (location != null) {
                 latitud = location.getLatitude();
                 longitud = location.getLongitude();
-                txtLatitudSi.setText(String.valueOf(latitud)); // Establecer latitud en EditText
-                txtLongitudSi.setText(String.valueOf(longitud)); // Establecer longitud en EditText
+                txtLatitudSi.setText(String.valueOf(latitud));
+                txtLongitudSi.setText(String.valueOf(longitud));
             } else {
                 Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    //Este metodo guarda lo obtenido
-
     private void guardarUbicacion() {
         DbUbicacionesHelper dbUbicacion = new DbUbicacionesHelper(this);
         String comentario = txtComentario.getText().toString();
         String latitudStr = txtLatitudSi.getText().toString();
         String longitudStr = txtLongitudSi.getText().toString();
-
-        // Convertir las cadenas a valores numéricos
         double latitudVal = Double.parseDouble(latitudStr);
         double longitudVal = Double.parseDouble(longitudStr);
-
-        // Obtener la fecha actual
         String fechaActual = java.text.DateFormat.getDateTimeInstance().format(new java.util.Date());
 
-        long resultado = dbUbicacion.insertarUbicacion(longitudVal, latitudVal, comentario, fechaActual);
-
-        if (resultado != -1) {
-            Toast.makeText(this, "Información guardada con éxito", Toast.LENGTH_SHORT).show();
+        if (imagenCapturada != null) {
+            long resultado = dbUbicacion.insertarUbicacion(longitudVal, latitudVal, comentario, fechaActual, imagenCapturada);
+            if (resultado != -1) {
+                Toast.makeText(this, "Información guardada con éxito", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error al guardar la información", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "Error al guardar la información", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No se ha tomado ninguna foto", Toast.LENGTH_SHORT).show();
         }
     }
-
-    //Aqui se validan los permisos
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -190,11 +173,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            Bitmap imgBitmap = BitmapFactory.decodeFile(rutaimagen);
-            imageView.setImageBitmap(imgBitmap);
+            imagenCapturada = BitmapFactory.decodeFile(rutaimagen);
+            imageView.setImageBitmap(imagenCapturada);
         }
     }
 
