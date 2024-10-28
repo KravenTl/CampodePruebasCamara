@@ -3,6 +3,15 @@
     <string name="btnCamara">Camara</string>
     <string name="btnUbicacion">Ubicacion</string>
     <string name="tvUbicacion">Obteniendo Ubicacion...</string>
-    <string name="btnObtenerUbicacion">Obtener ubicacion</string>
     <string name="btnCrearBase">Crear la base de datos</string>
+    <string name="btnMapa">Mapa</string>
+    <string name="btnGuadar">Guardar Información</string>
+    <string name="txtComentario">Ingrese un comentario</string>
+    <string name="txtLatitud">Ingrese la latitud</string>
+    <string name="txtLongitud">Ingrese la longitud</string>
+    <string name="btnBuscar">Buscar</string>
+    <string name="btnRegresar">Regresar</string>
+    <string name="txtLatitudSi">Latitud</string>
+    <string name="txtLongitudSi">Longitud</string>
+    <string name="btnGaleria">Galeria</string>
 </resources>

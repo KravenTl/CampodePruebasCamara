@@ -1,86 +1,81 @@
 package gt.edu.umg.campodepruebas;
 
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.TextView;
-import android.Manifest;
+import android.widget.EditText;
 import android.widget.Toast;
-
-import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class Ubicacion extends AppCompatActivity {
+public class Ubicacion extends AppCompatActivity implements OnMapReadyCallback {
 
-    private FusedLocationProviderClient proveedorUbicacion;
-    private TextView tvUbicacion;
-    private Button btnObtenerUbicacion;
-    private static final int CODIGO_SOLICITUD_UBICACION = 1;
+    EditText txtLatitud, txtLongitud;
+    Button btnBuscar, btnRegresar;
+    GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ubicacion);
 
-        tvUbicacion = findViewById(R.id.tvUbicacion);
-        proveedorUbicacion = LocationServices.getFusedLocationProviderClient(this);
-        btnObtenerUbicacion = findViewById(R.id.btnObtenerUbiacion);
-        btnObtenerUbicacion.setOnClickListener(v -> obtenerUbicacionActual()); // Obtener ubicación al presionar el botón
-    }
+        txtLatitud = findViewById(R.id.txtLatitud);
+        txtLongitud = findViewById(R.id.txtLongitud);
+        btnBuscar = findViewById(R.id.btnBuscar);
+        btnRegresar = findViewById(R.id.btnRegresar);
 
-    private void obtenerUbicacionActual(){
-        if(ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-        ){
-
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION}, CODIGO_SOLICITUD_UBICACION
-            );
-            return;
+        // Inicializar el mapa
+        SupportMapFragment fragmentoMapa = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (fragmentoMapa != null) {
+            fragmentoMapa.getMapAsync(this);
         }
 
-        proveedorUbicacion.getLastLocation().addOnSuccessListener(this, location -> {
-            if(location != null){
-                double latitud = location.getLatitude();
-                double longitud = location.getLongitude();
-                tvUbicacion.setText(
-                        "Latitud: " + latitud + "\n" +
-                                "Longitud: " + longitud
-                );
-                // Crear una instancia de DbUbicacion
-                DbUbicacionesHelper dbUbicacion = new DbUbicacionesHelper(this);
+        // Configurar la acción del botón buscar
+        btnBuscar.setOnClickListener(v -> buscarUbicacion());
 
-                // Insertar la ubicación en la base de datos
-                long resultado = dbUbicacion.insertarUbicacion(longitud, latitud);
-                if (resultado != -1) {
-                    Toast.makeText(this, "Ubicación guardada con éxito", Toast.LENGTH_SHORT).show();
-                    // Aquí podrías realizar alguna otra acción, como limpiar campos o actualizar la UI
-                } else {
-                    Toast.makeText(this, "Error al guardar la ubicación", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Configurar la acción del botón regresar
+        btnRegresar.setOnClickListener(v -> finish());  // Cierra la actividad actual
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permission, @NonNull int[] grantResults){
-        super.onRequestPermissionsResult(requestCode, permission, grantResults);
-        if(requestCode == CODIGO_SOLICITUD_UBICACION && grantResults.length > 0){
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                obtenerUbicacionActual();
-            } else {
-                tvUbicacion.setText("Permiso de ubicación denegado");
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Coordenadas de la ciudad de Guatemala
+        LatLng guatemala = new LatLng(14.6349, -90.5069);
+
+        // Mover la cámara a la ciudad de Guatemala
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(guatemala, 12));
+    }
+
+    // Metodo para buscar y centrar el mapa en las coordenadas proporcionadas
+    private void buscarUbicacion() {
+        String latitudTexto = txtLatitud.getText().toString();
+        String longitudTexto = txtLongitud.getText().toString();
+
+        if (!latitudTexto.isEmpty() && !longitudTexto.isEmpty()) {
+            try {
+                double latitud = Double.parseDouble(latitudTexto);
+                double longitud = Double.parseDouble(longitudTexto);
+
+                // Crear LatLng con las coordenadas y mover el mapa hacia esa posición
+                LatLng ubicacion = new LatLng(latitud, longitud);
+                mMap.clear();  // Limpiar otros marcadores
+                mMap.addMarker(new MarkerOptions().position(ubicacion).title("Ubicación seleccionada"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacion, 15));
+
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Coordenadas no válidas", Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(this, "Ingrese ambas coordenadas", Toast.LENGTH_SHORT).show();
         }
     }
 }

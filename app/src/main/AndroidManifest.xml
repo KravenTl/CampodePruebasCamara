@@ -9,10 +9,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission
-        android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +22,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampodePruebas"
         tools:targetApi="31">
+        <activity
+            android:name=".Galeria"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAhVmz9f7VbprFsclmAdpTwdZZedI8_CI8" />
+
         <activity
             android:name=".Ubicacion"
             android:exported="false" />
