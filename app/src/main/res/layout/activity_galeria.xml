@@ -5,4 +5,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Galeria"/>
+    tools:context=".Galeria">
+
+    <androidx.recyclerview.widget.RecyclerView
+
+        android:id="@+id/ListadeFotos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>

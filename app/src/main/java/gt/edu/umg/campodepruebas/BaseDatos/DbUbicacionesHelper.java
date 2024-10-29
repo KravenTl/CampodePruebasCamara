@@ -1,3 +1,5 @@
+// Código adaptado en DbUbicacionesHelper.java
+
 package gt.edu.umg.campodepruebas.BaseDatos;
 
 import android.content.ContentValues;
@@ -5,16 +7,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
-import gt.edu.umg.campodepruebas.Entidades.GaleriaDb;
+import gt.edu.umg.campodepruebas.Adaptadores.ListaFotosAdapter;
+import gt.edu.umg.campodepruebas.Entidades.FotosUbi;
 
 public class DbUbicacionesHelper extends SQLiteOpenHelper {
+
     private static final int DB_VERSION = 4; // Versión de la base de datos
     private static final String DB_NOMBRE = "dbUbicacion.db"; // Nombre de la base de datos
     public static final String TABLE_UBICACIONES = "ubicaciones"; // Nombre de la tabla
@@ -32,7 +35,7 @@ public class DbUbicacionesHelper extends SQLiteOpenHelper {
                 "latitud REAL, " +
                 "descripcion TEXT, " +
                 "fecha TEXT, " +
-                "foto BLOB" + // Columna para almacenar la imagen en formato BLOB
+                "foto TEXT" + // Guardar la ruta de la imagen como texto
                 ")");
     }
 
@@ -43,23 +46,23 @@ public class DbUbicacionesHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Método para insertar una ubicación
-    public long insertarUbicacion(double longitud, double latitud, String descripcion, String fecha, Bitmap imagen) {
+    // Método para insertar una ubicación con la ruta de la imagen como texto
+    public long insertarUbicacion(double longitud, double latitud, String descripcion, String fecha, String rutaImagen) {
         SQLiteDatabase db = this.getWritableDatabase(); // Abrir la base de datos en modo escritura
         ContentValues values = new ContentValues(); // Crear un objeto ContentValues para almacenar los datos
         values.put("longitud", longitud); // Agregar la longitud
         values.put("latitud", latitud); // Agregar la latitud
         values.put("descripcion", descripcion); // Agregar la descripción
         values.put("fecha", fecha); // Agregar la fecha
-
-        // Convertir la imagen a un array de bytes
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        imagen.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        values.put("foto", byteArray); // Agregar la imagen en formato BLOB
+        values.put("foto", rutaImagen); // Guardar la ruta de la imagen como texto
 
         long id = db.insert(TABLE_UBICACIONES, null, values); // Insertar los datos en la tabla
         db.close(); // Cerrar la base de datos
         return id; // Retornar el ID de la fila insertada
+    }
+
+    public Cursor getAllFotos() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT id, longitud, latitud, descripcion, fecha, foto FROM " + TABLE_UBICACIONES, null);
     }
 }

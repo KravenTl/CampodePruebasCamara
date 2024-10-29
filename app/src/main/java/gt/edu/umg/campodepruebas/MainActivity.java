@@ -3,28 +3,21 @@ package gt.edu.umg.campodepruebas;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.Manifest;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,14 +29,12 @@ import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-
     Button btnCamara, btnUbicacion, btnCrearBase, btnMapa, btnGuardar, btnGaleria;
     ImageView imageView;
-    String rutaimagen;
+    String rutaImagen; // Variable para almacenar la ruta de la última imagen
     EditText txtComentario, txtLatitudSi, txtLongitudSi;
     double latitud;
     double longitud;
-    private Bitmap imagenCapturada; // Almacena la imagen capturada
 
     private FusedLocationProviderClient proveedorUbicacion;
     private static final int CODIGO_SOLICITUD_UBICACION = 1;
@@ -68,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnCamara.setOnClickListener(v -> {
             try {
-                abrircamara();
+                abrirCamara();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -138,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         double longitudVal = Double.parseDouble(longitudStr);
         String fechaActual = java.text.DateFormat.getDateTimeInstance().format(new java.util.Date());
 
-        if (imagenCapturada != null) {
-            long resultado = dbUbicacion.insertarUbicacion(longitudVal, latitudVal, comentario, fechaActual, imagenCapturada);
+        if (rutaImagen != null) {
+            long resultado = dbUbicacion.insertarUbicacion(longitudVal, latitudVal, comentario, fechaActual, rutaImagen);
             if (resultado != -1) {
                 Toast.makeText(this, "Información guardada con éxito", Toast.LENGTH_SHORT).show();
             } else {
@@ -162,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void abrircamara() throws IOException {
+    private void abrirCamara() throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File imagenArchivo = crearImagen();
 
@@ -177,8 +168,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            imagenCapturada = BitmapFactory.decodeFile(rutaimagen);
-            imageView.setImageBitmap(imagenCapturada);
+            // Se utiliza BitmapFactory para cargar la imagen desde la ruta
+            imageView.setImageBitmap(BitmapFactory.decodeFile(rutaImagen));
         }
     }
 
@@ -186,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         String nombreImagen = "foto_";
         File directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File imagen = File.createTempFile(nombreImagen, ".jpg", directorio);
-        rutaimagen = imagen.getAbsolutePath();
+        rutaImagen = imagen.getAbsolutePath(); // Almacena la ruta de la imagen
         return imagen;
     }
 }
