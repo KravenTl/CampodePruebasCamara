@@ -51,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:backgroundTint="#4CAF50"
         android:text="@string/btnBuscar"
         app:layout_constraintTop_toBottomOf="@+id/txtLongitud"
         tools:layout_editor_absoluteX="162dp" />
@@ -60,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:backgroundTint="#E91E63"
         android:text="@string/btnRegresar"
         app:layout_constraintTop_toBottomOf="@+id/btnBuscar"
         tools:layout_editor_absoluteX="170dp" />

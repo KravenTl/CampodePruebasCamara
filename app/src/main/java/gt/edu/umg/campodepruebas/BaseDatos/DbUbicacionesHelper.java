@@ -1,4 +1,3 @@
-// Código adaptado en DbUbicacionesHelper.java
 
 package gt.edu.umg.campodepruebas.BaseDatos;
 

@@ -52,46 +52,12 @@ public class ListaFotosAdapter extends RecyclerView.Adapter<ListaFotosAdapter.Fo
                 .centerCrop()
                 .into(holder.imageView);
 
-        // Configurar clic largo para mostrar opciones de actualización/eliminación
-        holder.itemView.setOnLongClickListener(v -> {
-            showOptionsDialog(context, fotoUbi);
-            return true;
-        });
     }
 
     @Override
     public int getItemCount() {
         return listaFotos.size();
     }
-
-    // Mostrar diálogo de opciones
-    private void showOptionsDialog(Context context, FotosUbi fotoUbi) {
-        String[] options = {"Cambiar Estado"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Opciones de Foto")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        showStatusUpdateDialog(context, fotoUbi);
-                    }
-                })
-                .show();
-    }
-
-    // Método para mostrar diálogo de actualización de estado
-    private void showStatusUpdateDialog(Context context, FotosUbi fotoUbi) {
-        String[] estados = {"EN PROCESO", "RESUELTO", "CANCELADO"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Actualizar Estado")
-                .setItems(estados, (dialog, which) -> {
-                    String nuevoEstado = estados[which];
-                    Toast.makeText(context, "Estado cambiado a: " + nuevoEstado, Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
-                })
-                .show();
-    }
-
     public class FotoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView viewId, viewLatitud,viewLongitud,viewDescripcion, viewFecha;

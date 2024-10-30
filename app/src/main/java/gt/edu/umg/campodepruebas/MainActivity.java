@@ -1,9 +1,13 @@
 package gt.edu.umg.campodepruebas;
 
+import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,8 +28,6 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
 import java.io.IOException;
-
-import gt.edu.umg.campodepruebas.BaseDatos.DbUbicacionesHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -168,8 +170,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            // Se utiliza BitmapFactory para cargar la imagen desde la ruta
-            imageView.setImageBitmap(BitmapFactory.decodeFile(rutaImagen));
+            // Ajusta la orientación de la imagen antes de mostrarla en el ImageView
+            Bitmap imagenAjustada = ajustarOrientacion(rutaImagen);
+            imageView.setImageBitmap(imagenAjustada);
         }
     }
 
@@ -179,5 +182,35 @@ public class MainActivity extends AppCompatActivity {
         File imagen = File.createTempFile(nombreImagen, ".jpg", directorio);
         rutaImagen = imagen.getAbsolutePath(); // Almacena la ruta de la imagen
         return imagen;
+    }
+
+    // Metodo para ajustar la orientación de la imagen según los datos EXIF
+    public Bitmap ajustarOrientacion(String rutaImagen) {
+        Bitmap bitmap = BitmapFactory.decodeFile(rutaImagen);
+        try {
+            ExifInterface exif = new ExifInterface(rutaImagen);
+            int orientacion = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+            Matrix matrix = new Matrix();
+            switch (orientacion) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+                default:
+                    break;
+            }
+
+            // Crear un nuevo Bitmap con la orientación corregida
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 }
