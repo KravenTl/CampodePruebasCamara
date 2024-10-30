@@ -43,8 +43,8 @@ public class Galeria extends AppCompatActivity {
             do {
                 FotosUbi fotosUbi = new FotosUbi();
                 fotosUbi.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-                fotosUbi.setLongitud(cursor.getDouble(cursor.getColumnIndexOrThrow("longitud")));
                 fotosUbi.setLatitud(cursor.getDouble(cursor.getColumnIndexOrThrow("latitud")));
+                fotosUbi.setLongitud(cursor.getDouble(cursor.getColumnIndexOrThrow("longitud")));
                 fotosUbi.setDescripcion(cursor.getString(cursor.getColumnIndexOrThrow("descripcion")));
                 fotosUbi.setFecha(cursor.getString(cursor.getColumnIndexOrThrow("fecha")));
                 fotosUbi.setFoto(cursor.getString(cursor.getColumnIndexOrThrow("foto"))); // Ruta de la imagen

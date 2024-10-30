@@ -94,14 +94,14 @@ public class ListaFotosAdapter extends RecyclerView.Adapter<ListaFotosAdapter.Fo
 
     public class FotoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView viewId, viewLongitud, viewLatitud, viewDescripcion, viewFecha;
+        TextView viewId, viewLatitud,viewLongitud,viewDescripcion, viewFecha;
 
         public FotoViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.viewFoto);
             viewId = itemView.findViewById(R.id.ViewId);
-            viewLongitud = itemView.findViewById(R.id.ViewLongitud);
             viewLatitud = itemView.findViewById(R.id.ViewLatitud);
+            viewLongitud = itemView.findViewById(R.id.ViewLongitud);
             viewDescripcion = itemView.findViewById(R.id.ViewDescripcion);
             viewFecha = itemView.findViewById(R.id.ViewFecha);
         }
